@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clasificador de Cultivos</title>
+    <link rel="stylesheet" type="text/css" href="styles/formulario.css">
+    <script>
+        function clasificarCultivo(event) {
+            event.preventDefault();
+            const Potassium = document.getElementById('Potassium').value;
+            const Nitrogen = document.getElementById('Nitrogen').value;
+            const Phosphorus = document.getElementById('Phosphorus').value;
+            const Humidity = document.getElementById('Humidity').value;
+            const Rainfall = document.getElementById('Rainfall').value;
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `Potassium=${Potassium}&Nitrogen=${Nitrogen}&Phosphorus=${Phosphorus}&Humidity=${Humidity}&Rainfall=${Rainfall}`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('resultado').innerText = 'Error: ' + data.error;
+                } else {
+                    document.getElementById('resultado').innerText = 'El cultivo recomendado es ' + data.categoria;
+                }
+            })
+            .catch(error => {
+                document.getElementById('resultado').innerText = 'Error en la solicitud.';
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Clasificador de Cultivos</h1>
+    
+    <form id="formulario" onsubmit="clasificarCultivo(event)">
+
+        <label for="potassium">Potasio:</label>
+        <input type="text" id="Potassium" name="Potassium"><br><br>
+
+        <label for="nitrogen">Nitrogeno:</label>
+        <input type="text" id="Nitrogen" name="Nitrogen"><br><br>
+
+        <label for="phosphorus">Fosforo:</label>
+        <input type="text" id="Phosphorus" name="Phosphorus"><br><br>
+        
+        <label for="humidity">Humedad:</label>
+        <input type="text" id="Humidity" name="Humidity"><br><br>
+
+        <label for="rainfall">Lluvia:</label>
+        <input type="text" id="Rainfall" name="Rainfall"><br><br>
+
+        <input type="submit" value="Enviar">
+    </form>
+    <p id="resultado"></p>
+</body>
+</html>
